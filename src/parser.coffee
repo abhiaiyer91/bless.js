@@ -10,6 +10,15 @@ createAst = (rules) ->
   stylesheet:
     rules: rules
 
+# Recursively count nested rules
+#
+countNestedSelectors = (rule) ->
+  numNestedRules = 0;
+  return numNestedRules if typeof rule.rules is 'undefined'
+  for nestedRule in rule.rules
+    numNestedRules += countNestedSelectors nestedRule
+    numNestedRules += nestedRule.selectors.length if typeof nestedRule.selectors isnt 'undefined'
+  numNestedRules
 
 parser = (data) ->
 
@@ -50,12 +59,12 @@ parser = (data) ->
   for rule in ast.stylesheet.rules
     switch rule.type
 
-      # Regular CSS rules.
-      #
+    # Regular CSS rules.
+    #
       when 'rule'
-        # Check if adding this rule will break the selector limit. If so,
-        # produce a new AST first.
-        #
+      # Check if adding this rule will break the selector limit. If so,
+      # produce a new AST first.
+      #
         startNewAst() if numSelectors + rule.selectors.length > SELECTOR_LIMIT
 
 
@@ -63,20 +72,18 @@ parser = (data) ->
         totalNumSelectors += rule.selectors.length
 
 
-      # No-ops.
-      #
+    # No-ops.
+    #
       when 'comment'
 
       # Nested rules. Media queries, for example.
       #
       else
-        # Check if adding this rule will break the selector limit. If so,
-        # produce a new AST first.
-        #
-        numNestedRuleSelectors = 0
+      # Check if adding this rule will break the selector limit. If so,
+      # produce a new AST first.
+      #
 
-        for nestedRule in rule.rules
-          numNestedRuleSelectors += nestedRule.selectors.length
+        numNestedRuleSelectors = countNestedSelectors rule
 
         startNewAst() if numSelectors + numNestedRuleSelectors > SELECTOR_LIMIT
 
@@ -101,8 +108,8 @@ parser = (data) ->
   newData = (css.stringify ast for ast in newAsts)
 
   return {
-    data: newData
-    numSelectors: totalNumSelectors
+  data: newData
+  numSelectors: totalNumSelectors
   }
 
 module.exports = parser
