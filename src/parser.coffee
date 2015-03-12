@@ -10,15 +10,6 @@ createAst = (rules) ->
   stylesheet:
     rules: rules
 
-# Recursively count nested rules
-#
-countNestedSelectors = (rule) ->
-  numNestedRules = 0;
-  return numNestedRules if typeof rule.rules is 'undefined'
-  for nestedRule in rule.rules
-    numNestedRules += countNestedSelectors nestedRule
-    numNestedRules += nestedRule.selectors.length if typeof nestedRule.selectors isnt 'undefined'
-  numNestedRules
 
 parser = (data) ->
 
@@ -82,8 +73,11 @@ parser = (data) ->
       # Check if adding this rule will break the selector limit. If so,
       # produce a new AST first.
       #
-
-        numNestedRuleSelectors = countNestedSelectors rule
+        numNestedRuleSelectors = 0
+        if typeof rule.rules isnt 'undefined'
+          for nestedRule in rule.rules
+            if typeof nestedRule.selectors isnt 'undefined'
+              numNestedRuleSelectors += nestedRule.selectors.length
 
         startNewAst() if numSelectors + numNestedRuleSelectors > SELECTOR_LIMIT
 
