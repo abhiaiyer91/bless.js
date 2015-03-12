@@ -9,10 +9,10 @@ program = require 'commander'
 
 
 program
-  .version(pjson.version)
-  .usage('<input file> [<output file>] [options]')
-  .option('-f, --force', 'modify the input file provided'.yellow)
-  .parse process.argv
+.version(pjson.version)
+.usage('<input file> [<output file>] [options]')
+.option('-f, --force', 'modify the input file provided'.yellow)
+.parse process.argv
 
 
 # Input is the first argument passed to the binary after options flags have
