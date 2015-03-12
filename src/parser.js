@@ -71,7 +71,7 @@ parser = function(data) {
         _results = [];
         for (_k = 0, _len2 = newAsts.length; _k < _len2; _k++) {
             ast = newAsts[_k];
-            _results.push(css.stringify(ast), {compress:true});
+            _results.push(css.stringify(ast, {compress:true}));
         }
         return _results;
     })();
