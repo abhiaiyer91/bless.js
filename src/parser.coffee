@@ -1,4 +1,4 @@
-css = require 'css'
+css = require('css')
 
 
 SELECTOR_LIMIT = 4095
